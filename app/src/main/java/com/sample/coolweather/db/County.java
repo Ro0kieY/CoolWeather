@@ -1,78 +1,38 @@
 package com.sample.coolweather.db;
 
-import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.NotNull;
-import org.greenrobot.greendao.annotation.Generated;
+import org.litepal.crud.DataSupport;
 
 /**
- * Created by Jia on 2017/6/10.
+ * Created by Jia on 2017/6/11.
  */
 
-@Entity
-public class County {
+public class County extends DataSupport {
 
-    @Id(autoincrement = true)
-    private long id;
-
-    @NotNull
+    private int id;
     private String countyName;
-    private int countyCode;
-    private int cityId;
     private String weatherId;
 
-    @Generated(hash = 1334068032)
-    public County(long id, @NotNull String countyName, int countyCode, int cityId,
-            String weatherId) {
-        this.id = id;
-        this.countyName = countyName;
-        this.countyCode = countyCode;
-        this.cityId = cityId;
-        this.weatherId = weatherId;
+    public int getId() {
+        return id;
     }
 
-    @Generated(hash = 1991272252)
-    public County() {
-    }
-
-    public long getId() {
-        return this.id;
-    }
-
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
     public String getCountyName() {
-        return this.countyName;
+        return countyName;
     }
 
     public void setCountyName(String countyName) {
         this.countyName = countyName;
     }
 
-    public int getCountyCode() {
-        return this.countyCode;
-    }
-
-    public void setCountyCode(int countyCode) {
-        this.countyCode = countyCode;
-    }
-
-    public int getCityId() {
-        return this.cityId;
-    }
-
-    public void setCityId(int cityId) {
-        this.cityId = cityId;
-    }
-
     public String getWeatherId() {
-        return this.weatherId;
+        return weatherId;
     }
 
     public void setWeatherId(String weatherId) {
         this.weatherId = weatherId;
     }
-
 }

@@ -1,49 +1,27 @@
 package com.sample.coolweather.db;
 
-import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.NotNull;
-import org.greenrobot.greendao.annotation.Generated;
+import org.litepal.crud.DataSupport;
 
 /**
- * Created by Jia on 2017/6/10.
+ * Created by Jia on 2017/6/11.
  */
 
-/**
- * Entity mapped to table "Province"
- */
+public class Province extends DataSupport {
 
-@Entity
-public class Province {
-
-    @Id(autoincrement = true)
-    private long id;
-
-    @NotNull
+    private int id;
     private String provinceName;
     private int provinceCode;
 
-    @Generated(hash = 168672810)
-    public Province(long id, @NotNull String provinceName, int provinceCode) {
-        this.id = id;
-        this.provinceName = provinceName;
-        this.provinceCode = provinceCode;
+    public int getId() {
+        return id;
     }
 
-    @Generated(hash = 1309009906)
-    public Province() {
-    }
-
-    public long getId() {
-        return this.id;
-    }
-
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
     public String getProvinceName() {
-        return this.provinceName;
+        return provinceName;
     }
 
     public void setProvinceName(String provinceName) {
@@ -51,11 +29,10 @@ public class Province {
     }
 
     public int getProvinceCode() {
-        return this.provinceCode;
+        return provinceCode;
     }
 
     public void setProvinceCode(int provinceCode) {
         this.provinceCode = provinceCode;
     }
-    
 }
