@@ -41,6 +41,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.ViewHo
     }
 
     public LocationAdapter(List<String> dataList){
+
         mDataList = dataList;
     }
 
