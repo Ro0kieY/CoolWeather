@@ -55,7 +55,7 @@ public class WeatherActivity extends AppCompatActivity {
     private LinearLayout forecastLayout;
     private ImageView imageView;
 
-    private SwipeRefreshLayout swipeRefreshLayout;
+    public SwipeRefreshLayout swipeRefreshLayout;
     private LinearLayout weatherLayout;
 
     @Override
@@ -162,7 +162,7 @@ public class WeatherActivity extends AppCompatActivity {
      * 根据天气id请求服务器查询天气信息
      * @param weatherId
      */
-    private void requestWeather(String weatherId) {
+    public void requestWeather(final String weatherId) {
 
         String url = "http://guolin.tech/api/weather?cityid=" + weatherId + "&key=99e51f8d8de34c548517199ac72820ca";
         HttpUtil.sendOkHttpRequest(url, new Callback() {

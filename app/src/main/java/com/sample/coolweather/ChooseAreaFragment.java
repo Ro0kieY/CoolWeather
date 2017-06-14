@@ -2,7 +2,9 @@ package com.sample.coolweather;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -187,7 +189,6 @@ public class ChooseAreaFragment extends Fragment {
             queryFromServer(address, "county");
         }
     }
-
 
     /**
      * 根据传入的地址和类型从服务器查询省、市、县级数据

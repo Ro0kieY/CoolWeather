@@ -1,0 +1,63 @@
+[1mdiff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml[m
+[1mindex 874fec1..357fe12 100644[m
+[1m--- a/app/src/main/AndroidManifest.xml[m
+[1m+++ b/app/src/main/AndroidManifest.xml[m
+[36m@@ -19,7 +19,12 @@[m
+                 <category android:name="android.intent.category.LAUNCHER" />[m
+             </intent-filter>[m
+         </activity>[m
+[31m-        <activity android:name=".WeatherActivity"></activity>[m
+[32m+[m[32m        <activity android:name=".WeatherActivity" />[m
+[32m+[m
+[32m+[m[32m        <service[m
+[32m+[m[32m            android:name=".service.AutoUpdateService"[m
+[32m+[m[32m            android:enabled="true"[m
+[32m+[m[32m            android:exported="true"></service>[m
+     </application>[m
+ [m
+ </manifest>[m
+\ No newline at end of file[m
+[1mdiff --git a/app/src/main/java/com/sample/coolweather/ChooseAreaFragment.java b/app/src/main/java/com/sample/coolweather/ChooseAreaFragment.java[m
+[1mindex 79be95a..2918649 100644[m
+[1m--- a/app/src/main/java/com/sample/coolweather/ChooseAreaFragment.java[m
+[1m+++ b/app/src/main/java/com/sample/coolweather/ChooseAreaFragment.java[m
+[36m@@ -2,7 +2,9 @@[m [mpackage com.sample.coolweather;[m
+ [m
+ import android.app.ProgressDialog;[m
+ import android.content.Intent;[m
+[32m+[m[32mimport android.content.SharedPreferences;[m
+ import android.os.Bundle;[m
+[32m+[m[32mimport android.preference.PreferenceManager;[m
+ import android.support.annotation.Nullable;[m
+ import android.support.v4.app.Fragment;[m
+ import android.support.v7.widget.DefaultItemAnimator;[m
+[36m@@ -188,7 +190,6 @@[m [mpublic class ChooseAreaFragment extends Fragment {[m
+         }[m
+     }[m
+ [m
+[31m-[m
+     /**[m
+      * 根据传入的地址和类型从服务器查询省、市、县级数据[m
+      */[m
+[1mdiff --git a/app/src/main/java/com/sample/coolweather/WeatherActivity.java b/app/src/main/java/com/sample/coolweather/WeatherActivity.java[m
+[1mindex 2c5c9b5..1aff826 100644[m
+[1m--- a/app/src/main/java/com/sample/coolweather/WeatherActivity.java[m
+[1m+++ b/app/src/main/java/com/sample/coolweather/WeatherActivity.java[m
+[36m@@ -55,7 +55,7 @@[m [mpublic class WeatherActivity extends AppCompatActivity {[m
+     private LinearLayout forecastLayout;[m
+     private ImageView imageView;[m
+ [m
+[31m-    private SwipeRefreshLayout swipeRefreshLayout;[m
+[32m+[m[32m    public SwipeRefreshLayout swipeRefreshLayout;[m
+     private LinearLayout weatherLayout;[m
+ [m
+     @Override[m
+[36m@@ -162,7 +162,7 @@[m [mpublic class WeatherActivity extends AppCompatActivity {[m
+      * 根据天气id请求服务器查询天气信息[m
+      * @param weatherId[m
+      */[m
+[31m-    private void requestWeather(String weatherId) {[m
+[32m+[m[32m    public void requestWeather(final String weatherId) {[m
+ [m
+         String url = "http://guolin.tech/api/weather?cityid=" + weatherId + "&key=99e51f8d8de34c548517199ac72820ca";[m
+         HttpUtil.sendOkHttpRequest(url, new Callback() {[m
