@@ -9,7 +9,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="3"
         android:textSize="16sp"
-        android:layout_margin="10dp"/>
+        android:layout_margin="10dp"
+        android:textColor="#FFF"/>
 
     <TextView
         android:id="@+id/daily_forecast_weather_info"
@@ -17,7 +18,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textSize="16sp"
-        android:layout_margin="10dp"/>
+        android:layout_margin="10dp"
+        android:textColor="#FFF"/>
 
     <TextView
         android:id="@+id/daily_forecast_max_tmp"
@@ -25,7 +27,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textSize="16sp"
-        android:layout_margin="10dp"/>
+        android:layout_margin="10dp"
+        android:textColor="#FFF"/>
 
     <TextView
         android:id="@+id/daily_forecast_min_tmp"
@@ -33,6 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textSize="16sp"
-        android:layout_margin="10dp"/>
+        android:layout_margin="10dp"
+        android:textColor="#FFF"/>
 
 </LinearLayout>

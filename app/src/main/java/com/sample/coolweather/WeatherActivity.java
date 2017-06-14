@@ -1,7 +1,12 @@
 package com.sample.coolweather;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.ForwardingListener;
@@ -9,11 +14,13 @@ import android.support.v7.widget.ThemedSpinnerAdapter;
 import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.sample.coolweather.gson.DailyForecast;
 import com.sample.coolweather.gson.Weather;
 import com.sample.coolweather.util.HttpUtil;
@@ -27,6 +34,9 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class WeatherActivity extends AppCompatActivity {
+
+    public DrawerLayout drawerLayout;
+    private Button navButton;
 
     private TextView titleCity;
     private TextView titleUpdateTime;
@@ -45,9 +55,17 @@ public class WeatherActivity extends AppCompatActivity {
     private LinearLayout forecastLayout;
     private ImageView imageView;
 
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private LinearLayout weatherLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (Build.VERSION.SDK_INT >= 21){
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
         setContentView(R.layout.activity_weather);
 
         //初始化各控件
@@ -66,20 +84,77 @@ public class WeatherActivity extends AppCompatActivity {
         suggestionUv = (TextView)findViewById(R.id.suggestion_uv);
 
         forecastLayout = (LinearLayout)findViewById(R.id.daily_forecast_layout);
+        weatherLayout = (LinearLayout)findViewById(R.id.weather_layout);
+        drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        navButton = (Button)findViewById(R.id.nav_button);
 
         imageView = (ImageView)findViewById(R.id.image_view);
-
+        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String weatherString = prefs.getString("weather", null);
-        if (weatherString != null){
-            //有缓存时直接解析天气数据
-            Weather weather = JsonUtil.handleWeatherResponse(weatherString);
-            showWeatherInfo(weather);
+        String bingPic = prefs.getString("bingPic", null);
+        if (bingPic != null){
+            Glide.with(WeatherActivity.this).load(bingPic).into(imageView);
         } else {
+            loadBingPic();
+        }
+        String weatherString = prefs.getString("weather", null);
+        final String weatherId = getIntent().getStringExtra("weather_id");
+        Weather weather = JsonUtil.handleWeatherResponse(weatherString);
+        if (weatherString != null && weatherId == weather.basic.cityId){
+            //有缓存时直接解析天气数据
+            showWeatherInfo(weather);}
+        else {
             //无缓存时到服务器查询天气信息
-            String weatherId = getIntent().getStringExtra("weather_id");
+            weatherLayout.setVisibility(View.INVISIBLE);
             requestWeather(weatherId);
         }
+
+        navButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                requestWeather(weatherId);
+                loadBingPic();
+            }
+        });
+    }
+
+
+    /**
+     * 加载必应每日一图
+     */
+    private void loadBingPic() {
+
+        String requestBingPic = "http://guolin.tech/api/bing_pic";
+        HttpUtil.sendOkHttpRequest(requestBingPic, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String responseText = response.body().string();
+                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
+                editor.putString("bingPic", responseText);
+                editor.apply();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Glide.with(WeatherActivity.this).load(responseText).into(imageView);
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                });
+            }
+        });
+
     }
 
 
@@ -113,6 +188,7 @@ public class WeatherActivity extends AppCompatActivity {
                             editor.putString("weather", responseText);
                             editor.apply();
                             showWeatherInfo(weather);
+                            swipeRefreshLayout.setRefreshing(false);
                         } else {
                             Toast.makeText(WeatherActivity.this, "获取天气信息失败", Toast.LENGTH_SHORT).show();
                         }
@@ -120,7 +196,6 @@ public class WeatherActivity extends AppCompatActivity {
                 });
             }
         });
-
     }
 
     /**
@@ -170,6 +245,8 @@ public class WeatherActivity extends AppCompatActivity {
         suggestionSport.setText(sport);
         suggestionTravel.setText(travel);
         suggestionUv.setText(uv);
+
+        weatherLayout.setVisibility(View.VISIBLE);
     }
 
 
