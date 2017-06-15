@@ -32,6 +32,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.ViewHo
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder{
+
         TextView locationName;
 
         public ViewHolder(View itemView) {

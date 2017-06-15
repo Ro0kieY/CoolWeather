@@ -4,15 +4,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.ForwardingListener;
-import android.support.v7.widget.ThemedSpinnerAdapter;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -29,73 +26,63 @@ import com.sample.coolweather.util.HttpUtil;
 import com.sample.coolweather.util.JsonUtil;
 
 import java.io.IOException;
-import java.util.zip.Inflater;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
 public class WeatherActivity extends AppCompatActivity {
 
-    public DrawerLayout drawerLayout;
-    private Button navButton;
-
-    private TextView titleCity;
-    private TextView titleUpdateTime;
-
-    private TextView nowWeather;
-    private TextView nowTemperature;
-
-    private TextView aqiAqi;
-    private TextView aqiPM25;
-
-    private TextView suggestionComfort;
-    private TextView suggestionSport;
-    private TextView suggestionTravel;
-    private TextView suggestionUv;
-
-    private LinearLayout forecastLayout;
-    private ImageView imageView;
-
-    public SwipeRefreshLayout swipeRefreshLayout;
-    private LinearLayout weatherLayout;
+    @BindView(R.id.image_view)
+    ImageView imageView;
+    @BindView(R.id.nav_button)
+    Button navButton;
+    @BindView(R.id.title_city)
+    TextView titleCity;
+    @BindView(R.id.title_update_time)
+    TextView titleUpdateTime;
+    @BindView(R.id.now_temperature)
+    TextView nowTemperature;
+    @BindView(R.id.now_weather)
+    TextView nowWeather;
+    @BindView(R.id.aqi_aqi)
+    TextView aqiAqi;
+    @BindView(R.id.aqi_pm25)
+    TextView aqiPM25;
+    @BindView(R.id.daily_forecast_layout)
+    LinearLayout forecastLayout;
+    @BindView(R.id.suggestion_comfort)
+    TextView suggestionComfort;
+    @BindView(R.id.suggestion_sport)
+    TextView suggestionSport;
+    @BindView(R.id.suggestion_travel)
+    TextView suggestionTravel;
+    @BindView(R.id.suggestion_uv)
+    TextView suggestionUv;
+    @BindView(R.id.weather_layout)
+    LinearLayout weatherLayout;
+    @BindView(R.id.swipe_refresh)
+    SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.drawer_layout)
+    DrawerLayout drawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Build.VERSION.SDK_INT >= 21){
+        if (Build.VERSION.SDK_INT >= 21) {
             View decorView = getWindow().getDecorView();
             decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
         setContentView(R.layout.activity_weather);
+        ButterKnife.bind(this);
 
-        //初始化各控件
-        titleCity = (TextView)findViewById(R.id.title_city);
-        titleUpdateTime = (TextView)findViewById(R.id.title_update_time);
-
-        nowWeather = (TextView)findViewById(R.id.now_weather);
-        nowTemperature = (TextView)findViewById(R.id.now_temperature);
-
-        aqiAqi = (TextView)findViewById(R.id.aqi_aqi);
-        aqiPM25 = (TextView)findViewById(R.id.aqi_pm25);
-
-        suggestionComfort = (TextView)findViewById(R.id.suggestion_comfort);
-        suggestionSport = (TextView)findViewById(R.id.suggestion_sport);
-        suggestionTravel = (TextView)findViewById(R.id.suggestion_travel);
-        suggestionUv = (TextView)findViewById(R.id.suggestion_uv);
-
-        forecastLayout = (LinearLayout)findViewById(R.id.daily_forecast_layout);
-        weatherLayout = (LinearLayout)findViewById(R.id.weather_layout);
-        drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
-        navButton = (Button)findViewById(R.id.nav_button);
-
-        imageView = (ImageView)findViewById(R.id.image_view);
-        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String bingPic = prefs.getString("bingPic", null);
-        if (bingPic != null){
+        if (bingPic != null) {
             Glide.with(WeatherActivity.this).load(bingPic).into(imageView);
         } else {
             loadBingPic();
@@ -103,10 +90,10 @@ public class WeatherActivity extends AppCompatActivity {
         String weatherString = prefs.getString("weather", null);
         final String weatherId = getIntent().getStringExtra("weather_id");
         Weather weather = JsonUtil.handleWeatherResponse(weatherString);
-        if (weatherString != null && weatherId == weather.basic.cityId){
+        if (weatherString != null && weatherId == weather.basic.cityId) {
             //有缓存时直接解析天气数据
-            showWeatherInfo(weather);}
-        else {
+            showWeatherInfo(weather);
+        } else {
             //无缓存时到服务器查询天气信息
             weatherLayout.setVisibility(View.INVISIBLE);
             requestWeather(weatherId);
@@ -162,6 +149,7 @@ public class WeatherActivity extends AppCompatActivity {
 
     /**
      * 根据天气id请求服务器查询天气信息
+     *
      * @param weatherId
      */
     public void requestWeather(final String weatherId) {
@@ -185,7 +173,7 @@ public class WeatherActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (weather != null && "ok".equals(weather.status)){
+                        if (weather != null && "ok".equals(weather.status)) {
                             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
                             editor.putString("weather", responseText);
                             editor.apply();
@@ -202,6 +190,7 @@ public class WeatherActivity extends AppCompatActivity {
 
     /**
      * 处理展示Weather实体类中的数据
+     *
      * @param weather
      */
     private void showWeatherInfo(Weather weather) {
@@ -234,7 +223,7 @@ public class WeatherActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        if (weather.aqi != null){
+        if (weather.aqi != null) {
             aqiAqi.setText(weather.aqi.city.aqi);
             aqiPM25.setText(weather.aqi.city.pm25);
         }
@@ -249,7 +238,7 @@ public class WeatherActivity extends AppCompatActivity {
         suggestionUv.setText(uv);
 
         weatherLayout.setVisibility(View.VISIBLE);
-        Intent intent = new Intent (this, AutoUpdateService.class);
+        Intent intent = new Intent(this, AutoUpdateService.class);
         startService(intent);
     }
 
